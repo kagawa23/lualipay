@@ -1,13 +1,9 @@
-html {
-    height: 100%;
-}
-
 html * {
     font-weight: 200;
 }
 
 body {
-    height: 100%;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
@@ -17,25 +13,16 @@ body header {
     align-items: center;
 }
 
-body .phone-nav {
-    display: none;
-}
+/* body .nav {
+    display: flex;
+} */
 
-@media screen and (max-width:1023px) {
-    body .phone-nav {
-        display: block;
-    }
-}
-
-
-body .nav {
-    display: none;
-}
-
-@media screen and (max-width:1023px) {
-    body .nav {
-        display: block;
-    }
+.navbar-toggler .icon-bar {
+    display: block;
+    width: 22px;
+    height: 2px;
+    border-radius: 1px;
+    background-color: #888;
 }
 
 body .logo {
