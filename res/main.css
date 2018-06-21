@@ -1,0 +1,58 @@
+html {
+    height: 100%;
+}
+
+html * {
+    font-weight: 200;
+}
+
+body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+body header {
+    display: flex;
+    align-items: center;
+}
+
+body .phone-nav {
+    display: none;
+}
+
+@media screen and (max-width:1023px) {
+    body .phone-nav {
+        display: block;
+    }
+}
+
+
+body .nav {
+    display: none;
+}
+
+@media screen and (max-width:1023px) {
+    body .nav {
+        display: block;
+    }
+}
+
+body .logo {
+    font-weight: 600;
+    flex: 1;
+}
+
+body div.container {
+    flex: 1;
+}
+
+body .ad {
+    height: 300px;
+    width: 100%;
+    border: 1px solid black;
+}
+
+footer {
+    text-align: center;
+}
