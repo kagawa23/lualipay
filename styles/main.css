@@ -8,15 +8,19 @@ body {
     flex-direction: column;
 }
 
-body header {
-    display: flex;
-    align-items: center;
+.hidden {
+    display: none !important;
 }
 
 /* body .nav {
     display: flex;
 } */
-
+.navbar-toggler  {
+    height: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around; 
+}
 .navbar-toggler .icon-bar {
     display: block;
     width: 22px;
@@ -30,7 +34,7 @@ body .logo {
     flex: 1;
 }
 
-body div.container {
+main {
     flex: 1;
 }
 
@@ -42,4 +46,18 @@ body .ad {
 
 footer {
     text-align: center;
+}
+
+form.hb_info {
+    text-align: center;
+}
+
+/* .modal {
+    background-color: rgba(128, 128, 128, 0.8);
+    display: block;
+} */
+
+#custModal .modal-dialog {
+    top:50%;
+    transform: translateY(-50%);
 }
