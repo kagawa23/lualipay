@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://cdn.bootcss.com/normalize/8.0.0/normalize.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="./res/main.css" rel="stylesheet">
+    <link href="./styles/main.css" rel="stylesheet">
     <title>星云发红包</title>
 </head>
 
@@ -47,7 +47,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <p>请安装NAS钱包</p>
+                            <p></p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" id="modalSubmit" class="btn btn-secondary" data-dismiss="modal-submit">确定</button>
@@ -59,10 +59,10 @@
         <section class="form">
             <form class="hb_info">
                 <div class="form-group">
-                    <label for="exampleFormControlTextarea1">我要分享红包</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="5"></textarea>
+                    <label for="redPocketContent">我要分享红包</label>
+                    <textarea class="form-control" id="redPocketContent" rows="5"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary mb-2">分享</button>
+                <button type="submit" id="share" class="btn btn-primary mb-2">分享</button>
             </form>
         </section>
     </main>
@@ -78,14 +78,70 @@
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/nebpay.js@0.2.0/dist/nebPay.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/nebulas@0.5.2/dist/nebulas.js"></script>
-
     <script>
+        // var dappAddress = "n1q2PqGkpWtQ3UgNd55J6JyJBpNMCQhLAeK";
+        var dappAddress = "n1iAAmrZFz9qyCA4eMLPGGH1YYh2ySgVZ9N";
+        var NebPay = require("nebpay");     //https://github.com/nebulasio/nebPay
+        var nebPay = new NebPay();
+        var serialNumber
+        var callbackUrl = NebPay.config.mainnetUrl;   //如果合约在主网,则使用这个
+        // var callbackUrl = NebPay.config.testnetUrl;   //
+        function cbPush(resp) {
+            console.log("response of push: " + JSON.stringify(resp))
+            var respString = JSON.stringify(resp);
+            if (respString.search("rejected by user") !== -1) {
+                alert(respString)
+            } else if (respString.search("txhash") !== -1) {
+                $('.modal-body>p').append('需要进行区块确认，这可能会花费几十秒钟的时间。</br>你可以在<a href="https://wallet.nasscan.io/check.html" target="_blank">https://wallet.nasscan.io/check.html</a>中</br>使用<code>' + resp.txhash + '</code>查询进度！');
+                $('#custModal').modal('show');
+                // alert("wait for tx result: " + resp.txhash)
+            }
+        }
+        var serialNumber, intervalQuery, options = {    //使用nebpay的call接口去调用合约,
+            callback: callbackUrl,
+            // listener:cbPush,
+        };
+        function funcIntervalQuery() {
+            //queryPayInfo的options参数用来指定查询交易的服务器地址,(如果是主网可以忽略,因为默认服务器是在主网查询)
+            nebPay.queryPayInfo(serialNumber, options)   //search transaction result from server (result upload to server by app)
+                .then(function (resp) {
+                    console.log("tx result: " + resp)   //resp is a JSON string
+                    var respObject = JSON.parse(resp)
+                    //code==0交易发送成功, status==1交易已被打包上链
+                    if (respObject.code === 1 && respObject.data.hash ) {
+                        $('.modal-body>p').html('需要进行区块确认，这可能会花费几十秒钟的时间。</br>你可以在<a href="https://wallet.nasscan.io/check.html" target="_blank">https://wallet.nasscan.io/check.html</a>中</br>使用<code>' + respObject.data.hash + '</code>查询进度！');
+                        $('#custModal').modal('show');
+                    }
+                    if (respObject.code === 0 && respObject.data.status === 1) {
+                        //交易成功,处理后续任务....
+                        $('#custModal').modal('hide');
+                        clearInterval(intervalQuery)    //清除定时查询
+                    }
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+        }
         $(document).ready(function () {
-            // submit close modal
-            // $('#custModal').modal('show')
-            $("#modalSubmit").click(function(){
-                $('#custModal').modal('hide')
-            })
+            $("#modalSubmit").click(function () {
+                $('#custModal').modal('hide');
+                clearInterval(intervalQuery);
+            });
+
+            $('#share').click(function (event) {
+                var to = dappAddress;
+                var value = "0";
+                var callFunction = "save"
+                //var callArgs = "[\"" + $("#search_value").val() + "\",\"" + $("#add_value").val() + "\"]"
+                var arg1 = $("#redPocketContent").val(),
+                    callArgs = JSON.stringify([arg1]);
+                serialNumber = nebPay.call(to, value, callFunction, callArgs, options);
+                intervalQuery = setInterval(function () {
+                    funcIntervalQuery();
+                }, 10000);
+                event.preventDefault();
+                $("#redPocketContent").val = "";
+            });
         });
     </script>
 </body>

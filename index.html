@@ -7,12 +7,13 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://cdn.bootcss.com/normalize/8.0.0/normalize.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="./res/main.css" rel="stylesheet">
+    <link href="./styles/main.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <title>星云发红包</title>
 </head>
 
 <body class="container">
-    <header >
+    <header>
         <nav class="navbar navbar-expand-lg navbar-light">
             <a class="navbar-brand">星云发红包</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02"
@@ -37,35 +38,25 @@
 
     <main>
         <section class="ad">
-            支付宝发红包，你赚赏金
+            <img src="http://n.sinaimg.cn/sinacn14/548/w1280h868/20180524/ae24-haysvix9646301.jpg" alt="responsive web" class="img-fluid">
+            <h3 class="ad-caption">发钱啦!发钱啦!拿去花!</h3>
         </section>
         <section class="alipayTble">
             <table class="table">
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">地址</th>
                         <th scope="col">红包内容</th>
+                        <th scope="col">地址</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                    </tr>
                 </tbody>
             </table>
+            <p id="loading">
+                    <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>
+                    区块链加载中...
+                </p>
         </section>
     </main>
     <footer>
@@ -80,7 +71,52 @@
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/nebpay.js@0.2.0/dist/nebPay.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/nebulas@0.5.2/dist/nebulas.js"></script>
+    <script>
+        // var dappAddress = "n1q2PqGkpWtQ3UgNd55J6JyJBpNMCQhLAeK";
+        var dappAddress = "n1iAAmrZFz9qyCA4eMLPGGH1YYh2ySgVZ9N";
+        var nebulas = require("nebulas"),
+            Account = nebulas.Account,
+            neb = new nebulas.Neb();
+        // neb.setRequest(new nebulas.HttpRequest('https://testnet.nebulas.io'));
+        neb.setRequest(new nebulas.HttpRequest('https://mainnet.nebulas.io'));
+        function cbSearch(resp) {
+            $('#loading').addClass('hide');
+            var result = JSON.parse(resp.result);    ////resp is an object, resp.result is a JSON string
+            console.log("return of rpc call: " + JSON.stringify(result))
+            // create table by jquery
+            //for(var i)
+            for (var i = 0; i < result.length; i++) {
+                var rp = '<tr><th scope="row">' + i
+                    + '</th><td>' + result[i].value
+                    + '</td><td>' + result[i].author
+                    + '</td></tr>';
+                $('.table>tbody').append(rp);
+            }
+        }
 
+        $(document).ready(function () {
+            var from = Account.NewAccount().getAddressString();
+            var value = "0";
+            var nonce = "0"
+            var gas_price = "1000000"
+            var gas_limit = "2000000"
+            var callFunction = "getAll";
+            var callArgs = JSON.stringify([""]);  //推荐用 JSON.stringify 来生成参数字符串,这样会避免出错!
+            var contract = {
+                "function": callFunction,
+                "args": callArgs
+            }
+            neb.api.call(from, dappAddress, value, nonce, gas_price, gas_limit, contract).then(function (resp) {
+                cbSearch(resp)
+            }).catch(function (err) {
+                //cbSearch(err)
+                console.log("error:" + err.message)
+            })
+        });
+
+
+
+    </script>
 </body>
 
 </html>

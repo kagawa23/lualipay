@@ -37,13 +37,25 @@ body .logo {
 main {
     flex: 1;
 }
-
-body .ad {
-    height: 300px;
-    width: 100%;
-    border: 1px solid black;
+.hide {
+    display: none !important;
 }
-
+body .ad {
+    width: 100%;
+    position: relative;
+    text-align: center;
+}
+body .ad img {
+    max-height: 400px;
+}
+body .ad-caption {
+    position: absolute;
+    bottom: 0px;
+    color: white;
+    font-weight: 400;
+    width: 100%;
+    text-align: center;
+}
 footer {
     text-align: center;
 }
