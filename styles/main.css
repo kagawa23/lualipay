@@ -40,21 +40,21 @@ main {
 .hide {
     display: none !important;
 }
-body .ad {
+body .poster {
     width: 100%;
     position: relative;
     text-align: center;
 }
-body .ad img {
+body .poster img {
     max-height: 400px;
 }
-body .ad-caption {
+body .poster-title {
     position: absolute;
     bottom: 0px;
     color: white;
     font-weight: 400;
     width: 100%;
-    text-align: center;
+    text-select:none;
 }
 footer {
     text-align: center;
